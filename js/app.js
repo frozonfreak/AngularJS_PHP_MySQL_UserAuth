@@ -1,4 +1,4 @@
-var phpuserauth = angular.module('phpuserauth',['ui.bootstrap','ui.router','mobile-angular-ui','mobile-angular-ui.gestures','mobile-angular-ui.migrate']).run(function($rootScope){
+var phpuserauth = angular.module('phpuserauth',['ui.bootstrap','ui.router','mobile-angular-ui','mobile-angular-ui.gestures','mobile-angular-ui.migrate','angular-md5']).run(function($rootScope){
       $rootScope.userAgent = navigator.userAgent;
       
       // Needed for the loading screen
@@ -37,6 +37,18 @@ phpuserauth.factory('appSession', function($http){
             taskDetail  : detail,
             deadLine  : deadLine
           });
+        },
+        registerUser: function(user_name, first_name, last_name, email, dob, password, verify_password) {
+          return $http.post('server/updateTask.php',{
+            type      : 'registerUser',
+            userName  : user_name,
+            firstName : first_name,
+            lastName  : last_name,
+            email     : email, 
+            dob       : dob,
+            password  : password,
+            verifyPassword: verify_password
+          });
         }
     }
 });
@@ -47,8 +59,18 @@ phpuserauth.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('home', {
       url: "/",
-      templateUrl: "partials/forms.html",
-      controller: 'appFormsController',
+      templateUrl: "partials/home.html",
+      controller: 'appHomeController',
+    })
+    .state('login', {
+      url: "/login",
+      templateUrl: "partials/login.html",
+      controller: 'appLoginController',
+    })
+    .state('register', {
+      url: "/register",
+      templateUrl: "partials/register.html",
+      controller: 'appRegisterController',
     })
     .state('404', {
       url: "/404",
@@ -60,11 +82,61 @@ phpuserauth.config(function($stateProvider, $urlRouterProvider) {
 
 });
 
-phpuserauth.controller('appFormsController', function($scope, $timeout, $rootScope, appSession){
+phpuserauth.controller('appLoginController', function($scope, $timeout, $rootScope, appSession){
     
   $scope.login = function() {
     alert('You submitted the login form');
   };
+
+  $scope.updateTasks= function(data, status){
+      if(data["status"] == 0)
+        console.log("Success");
+      else
+        console.log(data["message"]);
+  };
+  $scope.displayError = function(data, status){
+      console.log("Error");
+  };
+
+  init();
+  function init(){
+      appSession.updateNewTask().success($scope.updateTasks).error($scope.displayError);
+  };
+
+});
+
+phpuserauth.controller('appRegisterController', function($scope, $timeout, $rootScope, md5, appSession){
+    
+  $scope.user_name;
+  $scope.first_name;
+  $scope.last_name;
+  $scope.dob;
+  $scope.email;
+  $scope.password;
+  $scope.verify_password;
+
+  $scope.register = function() {
+      appSession.registerUser($scope.user_name, $scope.first_name, $scope.last_name, $scope.email, $scope.dob, md5.createHash($scope.password), md5.createHash($scope.verify_password)).success($scope.updateTasks).error($scope.displayError);
+  };
+
+  $scope.updateTasks= function(data, status){
+      if(data["status"] == 0)
+        console.log("Success");
+      else
+        console.log(data["message"]);
+  };
+  $scope.displayError = function(data, status){
+      console.log("Error");
+  };
+
+  init();
+  function init(){
+      appSession.updateNewTask().success($scope.updateTasks).error($scope.displayError);
+  };
+
+});
+
+phpuserauth.controller('appHomeController', function($scope, $timeout, $rootScope, appSession){
 
   $scope.updateTasks= function(data, status){
       if(data["status"] == 0)
