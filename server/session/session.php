@@ -14,12 +14,12 @@ class Session{
 	}
 
 	public function isValidSession($session_id){
-		$db_cac_session  = new DB_CAC_Session();
+		$db_session  = new DB_Session();
 
-		$res = $db_cac_session->checkIfSessionExist($session_id);
+		$res = $db_session->checkIfSessionExist($session_id);
 		if($res[0] == "1"){	
-			$res1 = $db_cac_session->getSessionTime($session_id);
-			if(time() - $res1[0] < 1800){
+			$res1 = $db_session->getSessionTime($session_id);
+			if(time() - $res1[0] < DEFAULT_SESSION_TIME){
 				$response = array("status" => 0,
 	            	          	  "message"=> "Valid Session");
 			}
@@ -37,7 +37,7 @@ class Session{
 
 	public function createSession($userName){
 
-		$db_cac_session  = new DB_CAC_Session();
+		$db_session  = new DB_Session();
 
 		$remote_addr = ((isset($_SERVER['REMOTE_ADDR']))?$_SERVER['REMOTE_ADDR']:'');
 		$remote_host = ((isset($_SERVER['REMOTE_HOST']))?$_SERVER['REMOTE_HOST']:'');
@@ -47,7 +47,7 @@ class Session{
 
 		$session_id = uniqid().uniqid();
 
-		$res = $db_cac_session -> createSessionInDB($userName, $remote_addr, $remote_host, $remote_port, $remote_user, $user_agent, $session_id);
+		$res = $db_session -> createSessionInDB($userName, $remote_addr, $remote_host, $remote_port, $remote_user, $user_agent, $session_id);
 		if($res){
 			$response = array("status" => 0,
 	                      	  "message"=> $session_id);
@@ -58,13 +58,6 @@ class Session{
 		}
 
 		return $response;
-	}
-
-	public function isValidBackendSession(){
-		if(!isset($_SESSION["login_session_id"]))
-			return false;
-		else 
-			return true;
 	}
 }
 ?>

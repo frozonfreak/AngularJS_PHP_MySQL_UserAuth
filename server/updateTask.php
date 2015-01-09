@@ -77,6 +77,26 @@
 		        echo json_encode($response);
 
 		    break;
+
+		    case 'isValidSession':
+		    	if(isset($receivedData->{"sessionId"})){
+		    		$res = $session->isValidSession($receivedData->{"sessionId"});
+
+		    		if($res["status"] == 0){
+		    			$response = array("status" => 0,
+	                      				   "message"=> "Valid Session");	
+		    		}
+		    		else{
+		    			$response = array("status" => 1,
+	                      				   "message"=> "Invalid Session");	
+		    		}
+		    	}	
+		    	else{
+		        	$response = array("status" => 1,
+	                      "message"=> "All fields needs to be set");
+		        }
+		        echo json_encode($response);
+		    break;
 		}
 	}
 	else {
