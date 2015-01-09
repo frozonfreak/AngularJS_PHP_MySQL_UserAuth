@@ -8,6 +8,7 @@ class User_Components {
         require_once 'db_components.php';
         include_once 'session/session.php';
         require_once 'security/security.php';
+        require_once 'mail/mailer.php';
     }
   
     // destructor
@@ -18,8 +19,9 @@ class User_Components {
     // Connecting to database
     public function registerUserDetails($userName, $firstName, $lastName, $password, $email, $dob) {
         
-        $user_db = new DB_UserComponents();
+        $user_db      = new DB_UserComponents();
         $app_security = new App_Security();
+        $mailer       = new Mailer();
 
         $res = $app_security->checkValidEmail($email);
         if($res["status"] == 0){
@@ -28,8 +30,15 @@ class User_Components {
                 $res = $user_db->registerUserDetails($userName, $firstName, $lastName, $password, $email, $dob);
                 if($res["status"] == 0){
                     if(DEFAULT_SEND_EMAIL_VERIFICATION){
-                        $response = array("status" => 0,
-                                       "message"=> $res["message"]);
+                        $res = $mailer->sendUserRegistrationEmail($userName, $firstName, $lastName, $email);
+                        if($res["status"] == 0){
+                            $response = array("status" => 0,
+                                           "message"=> $res["message"]);
+                        }
+                        else{
+                            $response = array("status" => 1,
+                                           "message"=> "Registered succesfully, mail failed");   
+                        }
                     }
                     else{
                         $response = array("status" => 0,
