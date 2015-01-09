@@ -9,7 +9,8 @@ define("DB_PASSWORD", "root");
  
 //Some default config values
 define("DEFAULT_EMAIL_VERIFIED", false);
+define("DEFAULT_SEND_EMAIL_VERIFICATION", false);
 define("DEFAULT_RESET_PASS", true);
-define("DEFAULT_USER_ROLE", true);
+define("DEFAULT_USER_ROLE", 1);
 
 ?>

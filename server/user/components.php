@@ -6,6 +6,7 @@ class User_Components {
     function __construct() {
         require_once 'config.php';
         require_once 'db_components.php';
+        require_once 'security/security.php';
     }
   
     // destructor
@@ -17,24 +18,53 @@ class User_Components {
     public function registerUserDetails($userName, $firstName, $lastName, $password, $email, $dob) {
         
         $user_db = new DB_UserComponents();
-        $res = $user_db->checkIfUserExists($email);
+        $app_security = new App_Security();
+
+        $res = $app_security->checkValidEmail($email);
         if($res["status"] == 0){
-            $res = $user_db->registerUserDetails($userName, $firstName, $lastName, $password, $email, $dob);
+            $res = $user_db->checkIfUserExists($email);
             if($res["status"] == 0){
-                $response = array("status" => 0,
-                                   "message"=> $res["message"]);
+                $res = $user_db->registerUserDetails($userName, $firstName, $lastName, $password, $email, $dob);
+                if($res["status"] == 0){
+                    if(DEFAULT_SEND_EMAIL_VERIFICATION){
+                        $response = array("status" => 0,
+                                       "message"=> $res["message"]);
+                    }
+                    else{
+                        $response = array("status" => 0,
+                                       "message"=> $res["message"]);
+                    }
+                }
+                else{
+                    $response = array("status" => 1,
+                                       "message"=> $res["message"]);
+                }
             }
             else{
                 $response = array("status" => 1,
-                                   "message"=> $res["message"]);
+                                   "message"=> "User exists");
             }
         }
         else{
             $response = array("status" => 1,
-                               "message"=> "User exists");
+                              "message"=> "Invalid Email");
         }
         return $response;
     }
- 
+    
+    public function verifyUserLogin($userName, $userPassword){
+        $user_db = new DB_UserComponents();
+
+        $res = $user_db->verifyUserLogin($userName, $userPassword); 
+        if($res["status"] == 0){
+            $response = array("status" => 0,
+                              "message"=> "Success");  
+        }  
+        else{
+            $response = array("status" => 1,
+                              "message"=> "Invalid Login");   
+        }
+        return $response;
+    }
 } 
 ?>

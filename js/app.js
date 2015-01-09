@@ -30,14 +30,6 @@ var phpuserauth = angular.module('phpuserauth',['ui.bootstrap','ui.router','mobi
 
 phpuserauth.factory('appSession', function($http){
     return {
-        updateNewTask: function(name, detail, deadLine) {
-          return $http.post('server/updateTask.php',{
-            type    : 'newTask',
-            taskName  : name,
-            taskDetail  : detail,
-            deadLine  : deadLine
-          });
-        },
         registerUser: function(user_name, first_name, last_name, email, dob, password, verify_password) {
           return $http.post('server/updateTask.php',{
             type      : 'registerUser',
@@ -48,6 +40,13 @@ phpuserauth.factory('appSession', function($http){
             dob       : dob,
             password  : password,
             verifyPassword: verify_password
+          });
+        },
+        verifyUserLogin: function(user_name, user_password){
+          return $http.post('server/updateTask.php',{
+            type      : 'verifyUserLogin',
+            userName  : user_name,
+            password  : user_password
           });
         }
     }
@@ -82,28 +81,33 @@ phpuserauth.config(function($stateProvider, $urlRouterProvider) {
 
 });
 
-phpuserauth.controller('appLoginController', function($scope, $timeout, $rootScope, notify, appSession){
+phpuserauth.controller('appLoginController', function($scope, $timeout, $rootScope, md5, notify, appSession){
   
   $scope.rememberMe = true;
-  $scope.email;
+  $scope.username;
   $scope.password;
   $scope.login = function() {
-    alert('You submitted the login form');
+      appSession.verifyUserLogin($scope.username, md5.createHash($scope.password)).success($scope.updateTasks).error($scope.displayError);
   };
 
   $scope.updateTasks= function(data, status){
-      if(data["status"] == 0)
+      if(data["status"] == 0){
         console.log("Success");
-      else
+        notify("success");
+      }
+      else{
         console.log(data["message"]);
+        notify(data["message"]);
+      }
   };
   $scope.displayError = function(data, status){
       console.log("Error");
+      notify("Error");
   };
 
   init();
   function init(){
-      appSession.updateNewTask().success($scope.updateTasks).error($scope.displayError);
+      
   };
 
 });
@@ -138,7 +142,7 @@ phpuserauth.controller('appRegisterController', function($scope, $timeout, $root
 
   init();
   function init(){
-      appSession.updateNewTask().success($scope.updateTasks).error($scope.displayError);
+      
   };
 
 });
@@ -157,7 +161,7 @@ phpuserauth.controller('appHomeController', function($scope, $timeout, $rootScop
 
   init();
   function init(){
-      appSession.updateNewTask().success($scope.updateTasks).error($scope.displayError);
+      
   };
 
 });

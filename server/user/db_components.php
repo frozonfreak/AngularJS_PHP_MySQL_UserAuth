@@ -66,6 +66,35 @@ class DB_UserComponents{
 		return $response;
 	}
 
+	public function verifyUserLogin($userName, $userPass){
+
+		try{
+			$db = new PDO(DB_STRING, DB_USER, DB_PASSWORD);
+			$sql = $db->prepare("SELECT * FROM user_details WHERE user_name = :user_name AND user_pass = :user_pass");
+			$sql->bindParam(':user_name', $userName, PDO::PARAM_STR);
+			$sql->bindParam(':user_pass', $userPass, PDO::PARAM_STR);
+			$sql->execute();
+			$row = $sql->fetch(PDO::FETCH_ASSOC);
+		
+			if($row){
+				$response = array("status" => 0,
+			                 "message"=> "user found");
+			}
+			else{
+				$response = array("status" => 1,
+			                 "message"=> "no user found");
+			}
+			//var_dump(json_encode($response));
+			//return $response;
+		}
+		catch(Exception $e){
+			$response = array("status" => 1,
+			                 "message"=>(($e->getMessage()!=null) ? $e->getMessage() : 'Error retrieving data from database'));
+		}
+
+		return $response;
+	}
+
 	public function archiveTask($taskID){
 		try{
 			$db = new PDO(DB_STRING, DB_USER, DB_PASSWORD);
