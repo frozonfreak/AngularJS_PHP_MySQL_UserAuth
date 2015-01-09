@@ -6,8 +6,11 @@
 
 	include_once 'db_function.php';
 	include_once 'user/components.php';
+	include_once 'session/session.php';
 	
 	$db = new DB_Functions();
+	$user = new User_Components();
+	$session = new Session();
 
 	if(isset($receivedData->{"type"})){
 		$response = '';

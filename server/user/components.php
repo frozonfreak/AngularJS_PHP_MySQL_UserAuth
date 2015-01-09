@@ -4,7 +4,7 @@ class User_Components {
   
     // constructor
     function __construct() {
-        require_once 'config.php';
+        require_once '../config.php';
         require_once 'db.php';
     }
   

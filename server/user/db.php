@@ -6,7 +6,7 @@ class DB_UserComponents{
 	private $db;
 
 	function __construct(){
-		require_once 'config.php';
+		require_once '../config.php';
 	}
 
 	//destructor
