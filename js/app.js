@@ -83,7 +83,10 @@ phpuserauth.config(function($stateProvider, $urlRouterProvider) {
 });
 
 phpuserauth.controller('appLoginController', function($scope, $timeout, $rootScope, appSession){
-    
+  
+  $scope.rememberMe = true;
+  $scope.email;
+  $scope.password;
   $scope.login = function() {
     alert('You submitted the login form');
   };
@@ -177,30 +180,9 @@ phpuserauth.controller('MainController', function($rootScope, $scope){
   // Fake text i used here and there.
   $rootScope.lorem = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vel explicabo, aliquid eaque soluta nihil eligendi adipisci error, illum corrupti nam fuga omnis quod quaerat mollitia expedita impedit dolores ipsam. Obcaecati.';
 
-  // 
-  // 'Scroll' screen
-  // 
-  var scrollItems = [];
-
-  for (var i=1; i<=100; i++) {
-    scrollItems.push('Item ' + i);
-  }
-
-  $scope.scrollItems = scrollItems;
-
-  $scope.bottomReached = function() {
-    alert('Congrats you scrolled to the end of the list!');
-  }
   
   // 'Forms' screen
   //  
-  $scope.rememberMe = true;
-  $scope.email = 'me@example.com';
-  
-  $scope.login = function() {
-    alert('You submitted the login form');
-  };
-
   // 
   // 'Drag' screen
   // 

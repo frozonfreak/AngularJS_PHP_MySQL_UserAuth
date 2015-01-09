@@ -55,12 +55,12 @@
 			        	
 			        	$res = $user->registerUserDetails($userName, $firstName, $lastName, $email, $dob);
 
-			        	if($res)
+			        	if($res["status"] == 0)
 			        	    $response = array("status" => 0,
-			        	                      "message"=> "Success");
+			        	                      "message"=> $res["message"]);
 			        	else
 			        	    $response = array("status" => 1,
-			        	                      "message"=> "Error updating to DB");
+			        	                      "message"=> $res["message"]);
 			        }
 			        else{
 			        	$response = array("status" => 1,

@@ -4,8 +4,8 @@ class User_Components {
   
     // constructor
     function __construct() {
-        require_once '../config.php';
-        require_once 'db.php';
+        require_once 'config.php';
+        require_once 'db_components.php';
     }
   
     // destructor
@@ -18,14 +18,14 @@ class User_Components {
         
         $user_db = new DB_UserComponents();
 
-        $res = $user_db -> registerUserDetails($userName, $firstName, $lastName, $email, $dob);
-        if($res){
+        $res = $user_db->registerUserDetails($userName, $firstName, $lastName, $email, $dob);
+        if($res["status"] == 0){
             $response = array("status" => 0,
-                               "message"=> "Success");
+                               "message"=> $res["message"]);
         }
         else{
             $response = array("status" => 1,
-                               "message"=> "All fields needs to be set");
+                               "message"=> $res["message"]);
         }
 
         return $response;
