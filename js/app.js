@@ -1,4 +1,4 @@
-var phpuserauth = angular.module('phpuserauth',['ui.bootstrap','ui.router','mobile-angular-ui','mobile-angular-ui.gestures','mobile-angular-ui.migrate','angular-md5']).run(function($rootScope){
+var phpuserauth = angular.module('phpuserauth',['ui.bootstrap','ui.router','mobile-angular-ui','mobile-angular-ui.gestures','mobile-angular-ui.migrate','angular-md5', 'cgNotify']).run(function($rootScope){
       $rootScope.userAgent = navigator.userAgent;
       
       // Needed for the loading screen
@@ -82,7 +82,7 @@ phpuserauth.config(function($stateProvider, $urlRouterProvider) {
 
 });
 
-phpuserauth.controller('appLoginController', function($scope, $timeout, $rootScope, appSession){
+phpuserauth.controller('appLoginController', function($scope, $timeout, $rootScope, notify, appSession){
   
   $scope.rememberMe = true;
   $scope.email;
@@ -108,7 +108,7 @@ phpuserauth.controller('appLoginController', function($scope, $timeout, $rootSco
 
 });
 
-phpuserauth.controller('appRegisterController', function($scope, $timeout, $rootScope, md5, appSession){
+phpuserauth.controller('appRegisterController', function($scope, $timeout, $rootScope, md5, notify, appSession){
     
   $scope.user_name;
   $scope.first_name;
@@ -123,10 +123,14 @@ phpuserauth.controller('appRegisterController', function($scope, $timeout, $root
   };
 
   $scope.updateTasks= function(data, status){
-      if(data["status"] == 0)
+      if(data["status"] == 0){
         console.log("Success");
-      else
+        notify("Success");
+      }
+      else{
         console.log(data["message"]);
+        notify(data["message"]);
+      }
   };
   $scope.displayError = function(data, status){
       console.log("Error");
@@ -139,7 +143,7 @@ phpuserauth.controller('appRegisterController', function($scope, $timeout, $root
 
 });
 
-phpuserauth.controller('appHomeController', function($scope, $timeout, $rootScope, appSession){
+phpuserauth.controller('appHomeController', function($scope, $timeout, $rootScope, notify,  appSession){
 
   $scope.updateTasks= function(data, status){
       if(data["status"] == 0)

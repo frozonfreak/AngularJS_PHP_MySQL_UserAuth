@@ -50,10 +50,11 @@
 		    		$lastName 	= $receivedData->{"lastName"};
 		    		$email 		= $receivedData->{"email"};
 		    		$dob 		= $receivedData->{"dob"};
-		    		
+		    		$password   = $receivedData->{"password"};
+
 		    		if(strcmp($receivedData->{"password"}, $receivedData->{"verifyPassword"}) == 0){
 			        	
-			        	$res = $user->registerUserDetails($userName, $firstName, $lastName, $email, $dob);
+			        	$res = $user->registerUserDetails($userName, $firstName, $lastName, $password, $email, $dob);
 
 			        	if($res["status"] == 0)
 			        	    $response = array("status" => 0,

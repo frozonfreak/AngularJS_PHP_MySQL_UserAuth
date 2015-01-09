@@ -14,20 +14,25 @@ class User_Components {
     }
   
     // Connecting to database
-    public function registerUserDetails($userName, $firstName, $lastName, $email, $dob) {
+    public function registerUserDetails($userName, $firstName, $lastName, $password, $email, $dob) {
         
         $user_db = new DB_UserComponents();
-
-        $res = $user_db->registerUserDetails($userName, $firstName, $lastName, $email, $dob);
+        $res = $user_db->checkIfUserExists($email);
         if($res["status"] == 0){
-            $response = array("status" => 0,
-                               "message"=> $res["message"]);
+            $res = $user_db->registerUserDetails($userName, $firstName, $lastName, $password, $email, $dob);
+            if($res["status"] == 0){
+                $response = array("status" => 0,
+                                   "message"=> $res["message"]);
+            }
+            else{
+                $response = array("status" => 1,
+                                   "message"=> $res["message"]);
+            }
         }
         else{
             $response = array("status" => 1,
-                               "message"=> $res["message"]);
+                               "message"=> "User exists");
         }
-
         return $response;
     }
  
