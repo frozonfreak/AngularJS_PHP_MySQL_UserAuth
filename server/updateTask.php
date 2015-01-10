@@ -97,6 +97,17 @@
 		        }
 		        echo json_encode($response);
 		    break;
+
+		    case 'logOffUser':
+		    	
+		    	session_unset();     // unset $_SESSION variable for the run-time 
+		    	session_destroy();   // destroy session data in storage
+		    	
+		    	$response = array("status" => 0,
+		    		              "message"=> "logged out");
+		    	
+		    	echo json_encode($response);
+		    break;
 		}
 	}
 	else {

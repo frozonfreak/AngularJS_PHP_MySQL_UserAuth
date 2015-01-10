@@ -54,6 +54,11 @@ phpuserauth.factory('appSession', function($http){
             type       : 'checkValidSession',
             sessionId  : TokenID
           });
+        },
+        logOffUser: function(){
+          return $http.post('server/updateTask.php',{
+            type       : 'logOffUser'
+          });
         }
     }
 });
@@ -76,6 +81,11 @@ phpuserauth.config(function($stateProvider, $urlRouterProvider) {
       url: "/register",
       templateUrl: "partials/register.html",
       controller: 'appRegisterController',
+    })
+    .state('logoff', {
+      url: "/logoff",
+      templateUrl: "partials/logoff.html",
+      controller: 'appLogOffController',
     })
     .state('404', {
       url: "/404",
@@ -176,6 +186,30 @@ phpuserauth.controller('appHomeController', function($scope, $timeout, $rootScop
   init();
   function init(){
       appSession.checkValidSession($cookieStore.get('TokenID')).success($scope.aftValidSession).error($scope.displayError);
+  };
+
+});
+
+phpuserauth.controller('appLogOffController', function($scope, $timeout, $rootScope, $cookieStore, $location, notify, appSession){
+  
+  $scope.displayError = function(data, status){
+      console.log("Error");
+  };
+
+  $scope.updAftLogout = function(data, status){
+    if(data["status"] == 0){
+      $cookieStore.remove("TokenID");
+      $location.path("/login");
+    }
+    else{
+      notify(data["message"]);
+    }
+  };
+
+  init();
+  function init(){
+    $cookieStore.put('TokenID','');
+    appSession.logOffUser().success($scope.updAftLogout).error($scope.displayError);
   };
 
 });
