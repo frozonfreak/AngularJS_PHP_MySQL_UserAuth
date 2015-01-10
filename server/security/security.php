@@ -12,7 +12,27 @@ class App_Security {
     function __destruct() {
         
     }
-  
+    
+    public function generateRandomPassAndHash($length){
+
+      $randomString = $this->getRandomString($length);
+
+      $response = array("status" => 0,
+                        "message"=> md5($randomString));
+
+      return $response;
+    }
+
+    public function getRandomString($length = 8) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $string = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $string .= $characters[mt_rand(0, strlen($characters) - 1)];
+        }
+
+        return $string;
+    }
     // Connecting to database
     public function checkValidEmail($userEmail) {
         $domainName = explode('@', $userEmail);

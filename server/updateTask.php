@@ -99,7 +99,7 @@
 		    break;
 
 		    case 'logOffUser':
-		    	
+
 		    	session_unset();     // unset $_SESSION variable for the run-time 
 		    	session_destroy();   // destroy session data in storage
 		    	
@@ -108,6 +108,61 @@
 		    	
 		    	echo json_encode($response);
 		    break;
+
+		    case 'forgotpassword':
+		    	if(isset($receivedData->{"email"})){
+		    		$res = $user->forgotpassword($receivedData->{"email"});
+
+		    		if($res["status"] == 0){
+		    			$response = array("status" => 0,
+	                      				   "message"=> "Reset Email sent");	
+		    		}
+		    		else{
+		    			$response = array("status" => 1,
+	                      				   "message"=> $res["message"]);	
+		    		}
+		    	}
+		    	else{
+		        	$response = array("status" => 1,
+	                      "message"=> "All fields needs to be set");
+		        }
+		        echo json_encode($response);
+		    break;
+
+		    case 'updatepassword':
+		    	if(isset($receivedData->{"email"}) && 
+		    		isset($receivedData->{"token"}) &&
+		    		isset($receivedData->{"password"}) &&
+		    		isset($receivedData->{"verifypassword"})) {
+		    		
+		    		$email 		= $receivedData->{"email"};
+		    		$token 		= $receivedData->{"token"};
+		    		$password   = $receivedData->{"password"};
+		    		$verifypassword   = $receivedData->{"verifypassword"};
+
+		    		if(strcmp($receivedData->{"password"}, $receivedData->{"verifypassword"}) == 0){
+			        	
+			        	$res = $user->updatePasswordResetDetails($email, $token, $password);
+
+			        	if($res["status"] == 0)
+			        	    $response = array("status" => 0,
+			        	                      "message"=> $res["message"]);
+			        	else
+			        	    $response = array("status" => 1,
+			        	                      "message"=> $res["message"]);
+			        }
+			        else{
+			        	$response = array("status" => 1,
+	                      "message"=> "Password mismatch");	
+			        }
+		        }
+		        else{
+		        	$response = array("status" => 1,
+	                      "message"=> "All fields needs to be set");
+		        }
+		        echo json_encode($response);
+		    break;
+
 		}
 	}
 	else {

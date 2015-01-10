@@ -59,6 +59,21 @@ phpuserauth.factory('appSession', function($http){
           return $http.post('server/updateTask.php',{
             type       : 'logOffUser'
           });
+        }, 
+        forgotpassword: function(user_email){
+          return $http.post('server/updateTask.php',{
+            type       : 'forgotpassword',
+            email      : user_email
+          });
+        }, 
+        updatepassword: function(email, token, password, verifypassword){
+          return $http.post('server/updateTask.php',{
+            type       : 'updatepassword',
+            email      : email,
+            token      : token,
+            password   : password,
+            verifypassword : verifypassword
+          });
         }
     }
 });
@@ -86,6 +101,16 @@ phpuserauth.config(function($stateProvider, $urlRouterProvider) {
       url: "/logoff",
       templateUrl: "partials/logoff.html",
       controller: 'appLogOffController',
+    })
+    .state('forgotpassword', {
+      url: "/forgotpassword",
+      templateUrl: "partials/forgotpassword.html",
+      controller: 'appForgotPassController',
+    })
+    .state('resetpassword', {
+      url: "/resetpassword/:email/:token",
+      templateUrl: "partials/resetpassword.html",
+      controller: 'appResetPassController',
     })
     .state('404', {
       url: "/404",
@@ -210,6 +235,74 @@ phpuserauth.controller('appLogOffController', function($scope, $timeout, $rootSc
   function init(){
     $cookieStore.put('TokenID','');
     appSession.logOffUser().success($scope.updAftLogout).error($scope.displayError);
+  };
+
+});
+
+phpuserauth.controller('appForgotPassController', function($scope, $timeout, $rootScope, $cookieStore, $location, notify, appSession){
+  
+  $scope.email;
+
+  $scope.displayError = function(data, status){
+      console.log("Error");
+  };
+
+  $scope.updAftLogout = function(data, status){
+    if(data["status"] == 0){
+      $cookieStore.remove("TokenID");
+      $location.path("/login");
+    }
+    else{
+      notify(data["message"]);
+    }
+  };
+
+  $scope.forgotpassword = function(){
+    appSession.forgotpassword($scope.email).success($scope.updAftLogout).error($scope.displayError);
+  };
+
+  init();
+  function init(){
+  
+  };
+
+});
+
+phpuserauth.controller('appResetPassController', function($stateParams, $scope, $timeout, $rootScope, $cookieStore, $location, md5, notify, appSession){
+  
+  $scope.password;
+  $scope.verifypassword;
+  $scope.email;
+  $scope.token;
+
+  $scope.displayError = function(data, status){
+      console.log("Error");
+  };
+
+  $scope.updtAftReset = function(data, status){
+    if(data["status"] == 0){
+      notify("password reset succesfull")
+    }
+    else{
+      notify(data["message"]);
+    }
+  };
+
+  $scope.updatepassword = function(){
+    console.log($scope.password);
+    console.log($scope.verifypassword);
+      //if ($scope.password == $scope.verifypassword)
+        appSession.updatepassword($stateParams.email, $stateParams.token, md5.createHash($scope.password), md5.createHash($scope.verifypassword)).success($scope.updtAftReset).error($scope.displayError);
+      //else
+      //  notify("password mismatch");
+  };
+
+  init();
+  function init(){
+    if($stateParams.email == '' || $stateParams.token == '')
+      notify("Invalid URL");
+    //console.log($stateParams.email);
+    //console.log($stateParams.token);
   };
 
 });

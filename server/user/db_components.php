@@ -38,7 +38,7 @@ class DB_UserComponents{
 		return $response;
 	}
 
-	public function checkIfUserExists($userEmail){
+	public function checkIfUserNotExists($userEmail){
 
 		try{
 			$db = new PDO(DB_STRING, DB_USER, DB_PASSWORD);
@@ -54,6 +54,34 @@ class DB_UserComponents{
 			else{
 				$response = array("status" => 1,
 			                 "message"=> "user found");
+			}
+			//var_dump(json_encode($response));
+			//return $response;
+		}
+		catch(Exception $e){
+			$response = array("status" => 1,
+			                 "message"=>(($e->getMessage()!=null) ? $e->getMessage() : 'Error retrieving data from database'));
+		}
+
+		return $response;
+	}
+
+	public function checkIfUserExists($userEmail){
+
+		try{
+			$db = new PDO(DB_STRING, DB_USER, DB_PASSWORD);
+			$sql = $db->prepare("SELECT * FROM user_details WHERE user_email = :user_email");
+			$sql->bindParam(':user_email', $userEmail, PDO::PARAM_STR);
+			$sql->execute();
+			$row = $sql->fetch(PDO::FETCH_ASSOC);
+		
+			if($row){
+				$response = array("status" => 0,
+			                 "message"=> "user found");
+			}
+			else{
+				$response = array("status" => 1,
+			                 "message"=> "no user found");
 			}
 			//var_dump(json_encode($response));
 			//return $response;
@@ -95,6 +123,52 @@ class DB_UserComponents{
 		return $response;
 	}
 
+	public function updateUserPasswordToDB($user_email, $user_pass){
+		try{
+			$db = new PDO(DB_STRING, DB_USER, DB_PASSWORD);
+			$sql = "UPDATE user_details SET user_pass=:user_pass WHERE user_email=:user_email";
+			$res = $db->prepare($sql);
+			$res->execute(array(':user_pass' => $user_pass, ':user_email' => $user_email));
+			$db = null;
+			if($res->rowCount()){
+				$response = array("status" => 0,
+			                 "message"=> "user updated");
+			}
+			else{
+				$response = array("status" => 1,
+			                 "message"=> "user update failed");
+			}
+		}
+		catch(Exception $e){
+			$response = array("status" => 1,
+			                 "message"=>(($e->getMessage()!=null) ? $e->getMessage() : 'Error retrieving data from database'));
+		}
+		return $response;
+	}
+
+	public function updateUserPasswordByReset($email, $token, $password){
+		try{
+			$db = new PDO(DB_STRING, DB_USER, DB_PASSWORD);
+			$sql = "UPDATE user_details SET user_pass=:user_pass WHERE user_email=:user_email AND user_pass=:pass_token";
+			$res = $db->prepare($sql);
+			$res->execute(array(':user_pass' => $password, ':user_email' => $email, ':pass_token'=>$token));
+
+			$db = null;
+			if($res->rowCount()){
+				$response = array("status" => 0,
+			                 "message"=> "user password updated");
+			}
+			else{
+				$response = array("status" => 1,
+			                 "message"=> "Password reset failed");
+			}
+		}
+		catch(Exception $e){
+			$response = array("status" => 1,
+			                 "message"=>(($e->getMessage()!=null) ? $e->getMessage() : 'Error retrieving data from database'));
+		}
+		return $response;
+	}
 	public function archiveTask($taskID){
 		try{
 			$db = new PDO(DB_STRING, DB_USER, DB_PASSWORD);
