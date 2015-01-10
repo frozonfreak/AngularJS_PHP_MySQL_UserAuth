@@ -1,4 +1,4 @@
-var phpuserauth = angular.module('phpuserauth',['ui.bootstrap','ui.router','mobile-angular-ui','mobile-angular-ui.gestures','mobile-angular-ui.migrate','angular-md5', 'cgNotify']).run(function($rootScope){
+var phpuserauth = angular.module('phpuserauth',['ui.bootstrap','ui.router','mobile-angular-ui','mobile-angular-ui.gestures','mobile-angular-ui.migrate','angular-md5', 'cgNotify', 'ngCookies']).run(function($rootScope){
       $rootScope.userAgent = navigator.userAgent;
       
       // Needed for the loading screen
@@ -48,6 +48,12 @@ phpuserauth.factory('appSession', function($http){
             userName  : user_name,
             password  : user_password
           });
+        }, 
+        checkValidSession: function(TokenID){
+          return $http.post('server/updateTask.php',{
+            type       : 'checkValidSession',
+            sessionId  : TokenID
+          });
         }
     }
 });
@@ -81,7 +87,7 @@ phpuserauth.config(function($stateProvider, $urlRouterProvider) {
 
 });
 
-phpuserauth.controller('appLoginController', function($scope, $timeout, $rootScope, md5, notify, appSession){
+phpuserauth.controller('appLoginController', function($scope, $timeout, $rootScope, $location, $cookieStore, md5, notify, appSession){
   
   $scope.rememberMe = true;
   $scope.username;
@@ -92,6 +98,8 @@ phpuserauth.controller('appLoginController', function($scope, $timeout, $rootSco
 
   $scope.updateTasks= function(data, status){
       if(data["status"] == 0){
+        $cookieStore.put('TokenID',data["message"]);
+        $location.path('/');
         console.log("Success");
         notify("success");
       }
@@ -147,7 +155,7 @@ phpuserauth.controller('appRegisterController', function($scope, $timeout, $root
 
 });
 
-phpuserauth.controller('appHomeController', function($scope, $timeout, $rootScope, notify,  appSession){
+phpuserauth.controller('appHomeController', function($scope, $timeout, $rootScope, $cookieStore, $location, notify, appSession){
 
   $scope.updateTasks= function(data, status){
       if(data["status"] == 0)
@@ -155,13 +163,19 @@ phpuserauth.controller('appHomeController', function($scope, $timeout, $rootScop
       else
         console.log(data["message"]);
   };
+  
   $scope.displayError = function(data, status){
       console.log("Error");
   };
 
+  $scope.aftValidSession = function(data, status){
+    if(data["status"] == 1)
+      $location.path('/login');
+  };
+
   init();
   function init(){
-      
+      appSession.checkValidSession($cookieStore.get('TokenID')).success($scope.aftValidSession).error($scope.displayError);
   };
 
 });

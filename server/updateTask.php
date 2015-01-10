@@ -78,7 +78,7 @@
 
 		    break;
 
-		    case 'isValidSession':
+		    case 'checkValidSession':
 		    	if(isset($receivedData->{"sessionId"})){
 		    		$res = $session->isValidSession($receivedData->{"sessionId"});
 
