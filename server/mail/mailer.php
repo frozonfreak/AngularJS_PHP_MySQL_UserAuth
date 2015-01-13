@@ -38,7 +38,7 @@ class Mailer {
         //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
         $mail->isHTML(true);                                  // Set email format to HTML
 
-        $mail->Subject = 'Welcome to LMS';
+        $mail->Subject = 'Welcome Message';
         $mail->Body    = $this->generateWelcomeEmailMessage();
         $mail->AltBody = $this->generateWelcomeEmailMessage();
 
@@ -77,7 +77,7 @@ class Mailer {
         //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
         $mail->isHTML(true);                                  // Set email format to HTML
 
-        $mail->Subject = 'LMS Password reset';
+        $mail->Subject = 'Password reset';
         $mail->Body    = $this->generateResetEmailMessage($resetURL);
         $mail->AltBody = $this->generateResetEmailMessage($resetURL);
 
